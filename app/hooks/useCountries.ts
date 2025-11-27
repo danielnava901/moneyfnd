@@ -13,7 +13,12 @@ const useCountries = () => {
                 method: "GET",
             });
 
-            const data = await responseCountries.json();
+            let data = await responseCountries.json();
+            data = [
+                ...data.filter((item: any) => item.code === "MXN"),
+                ...data.filter((item: any) => item.code !== "MXN")
+            ];
+
             setCountries(data);
         }catch(e: any) {
             console.error(e.message);

@@ -1,11 +1,14 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import type {CountryType} from "~/models/models";
 import CountryButton from "~/components/CountryButton";
 import useCountries from "~/hooks/useCountries";
 import useRates from "~/hooks/useRates";
 import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import Carousel from "~/components/Carousel";
+import CurrencyGraph from "~/components/CurrencyGraph";
+import ExchangeDisplay from "~/components/ExchangeDisplay";
 
-const initCountry : CountryType = {
+const initValue : CountryType = {
     id: 1,
     symbol: "$",
     value: 0,
@@ -15,44 +18,45 @@ const initCountry : CountryType = {
 }
 
 const Money = () => {
-    const [currentCountry, setCountry] = useState<CountryType>(initCountry);
     const {countries} = useCountries();
-    const {rates, loadingRate} = useRates(currentCountry?.code);
-    console.log({rates, loadingRate});
+    const [currentCountry, setCountry] = useState<CountryType|null>(null);
 
-    return <div className="bg-sky-100 h-[100vh] w-[100vw]">
-        <div className="flex items-center gap-2 w-max-[900vw] overflow-y-auto py-3">
-            {
-                countries.map((country: CountryType) => {
-                    return <CountryButton
-                        key={country.code}
-                        country={country}
-                        isSelected={country.code === currentCountry?.code}
-                        onClick={() => {
-                            setCountry(country);
-                        }}
+    useEffect(() => {
+        if (countries.length > 0 && !currentCountry) {
+            const mxnCountry = countries.find(c => c.code === "MXN");
+            if (mxnCountry) setCountry(mxnCountry);
+        }
+    }, [countries, currentCountry]);
+
+    const {rates, loadingRate} = useRates(currentCountry?.code  || "MXN");
+
+    return <div className="min-h-screen bg-slate-950 text-gray-200">
+        <div className="container mx-auto px-4 py-6">
+            <Carousel
+                countries={countries}
+                selectedCountry={currentCountry}
+                onSelectCountry={(country : CountryType) => {
+                    setCountry(country);
+                }}
+            />
+
+            <div className="grid lg:grid-cols-12 grid-cols-1 gap-8 mt-12 grid-rows-1">
+                <div className="lg:col-span-3 col-span-1">
+                    <ExchangeDisplay
+                        country={currentCountry}
+                        loading={loadingRate}
                     />
-                })
-            }
-        </div>
+                </div>
 
-        <div className="flex items-center justify-between h-full">
-            <div className="w-3/12">
-                precio hoy
+                <div className="lg:col-span-9 lg:p-8 col-span-1">
+                    {
+                        !loadingRate && rates && rates.length > 0 && (
+                            <CurrencyGraph data={rates} />
+                        )
+                    }
+                </div>
+
             </div>
-            {
-                !loadingRate && rates && rates.length > 0 && (
-                    <ResponsiveContainer width="100%" height={600}>
-                        <LineChart data={rates}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="created_at" />
-                            <YAxis domain={['dataMin - 0.19', 'dataMax + 0.19']}/>
-                            <Tooltip />
-                            <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} />
-                        </LineChart>
-                    </ResponsiveContainer>
-                )
-            }
         </div>
     </div>;
 }
