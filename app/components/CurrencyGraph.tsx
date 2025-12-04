@@ -6,10 +6,11 @@ const CurrencyGraph = ({data} : any) => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
                 tickFormatter={(value) => {
-                    return new Intl.DateTimeFormat("en", {
+                    console.log({value})
+                    return new Intl.DateTimeFormat("es-MX", {
                         month: "short",
-                        day: "numeric"
-                    }).format(new Date(value));
+                        day: "numeric",
+                    }).format(new Date(value + "T00:00:00"));
                 }}
                 dataKey="created_at"
             />

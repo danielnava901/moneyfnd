@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {URL_API} from "~/constants";
 
 const useRates = (code: string) => {
     const [rates, setData] = useState<any[]| null>(null);
@@ -8,7 +9,7 @@ const useRates = (code: string) => {
 
         try {
             setLoadingData(true);
-            const response = await fetch("http://localhost:9992/currency/"+code+"/history");
+            const response = await fetch(`${URL_API}/currency/${code}/history`);
 
             let data = await response.json();
             data = data.map((item: any) => {
@@ -19,6 +20,7 @@ const useRates = (code: string) => {
                 }
             })
 
+            console.log("data", data);
             setData(data);
         }catch (e: any){
             console.error(e.message);

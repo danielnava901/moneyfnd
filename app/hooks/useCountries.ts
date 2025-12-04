@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import type {CountryType} from "~/models/models";
+import {URL_API} from "~/constants";
 
 const useCountries = () => {
     const [countries, setCountries] = useState<CountryType[]>([]);
@@ -9,7 +10,7 @@ const useCountries = () => {
 
         try {
             setLoading(true);
-            const responseCountries = await fetch("http://localhost:9992/countries", {
+            const responseCountries = await fetch(`${URL_API}/countries`, {
                 method: "GET",
             });
 
