@@ -7,7 +7,13 @@ type CountryType = {
     updatedAt: string;
 }
 
+type OptionItemType = {
+    id?: number|null;
+    label: string;
+    value: number|string;
+}
 
 export type {
-    CountryType
+    CountryType,
+    OptionItemType
 }

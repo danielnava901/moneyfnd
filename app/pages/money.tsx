@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import type {CountryType} from "~/models/models";
+import type {CountryType, OptionItemType} from "~/models/models";
 import CountryButton from "~/components/CountryButton";
 import useCountries from "~/hooks/useCountries";
 import useRates from "~/hooks/useRates";
@@ -7,6 +7,7 @@ import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAx
 import Carousel from "~/components/Carousel";
 import CurrencyGraph from "~/components/CurrencyGraph";
 import ExchangeDisplay from "~/components/ExchangeDisplay";
+import Filters from "~/components/Filters";
 
 const initValue : CountryType = {
     id: 1,
@@ -20,6 +21,7 @@ const initValue : CountryType = {
 const Money = () => {
     const {countries} = useCountries();
     const [currentCountry, setCountry] = useState<CountryType|null>(null);
+    const [currentFilter, setCurrentFilter] = useState<OptionItemType|null>({value: 7, label: "7 Days"});
 
     useEffect(() => {
         if (countries.length > 0 && !currentCountry) {
@@ -28,7 +30,7 @@ const Money = () => {
         }
     }, [countries, currentCountry]);
 
-    const {rates, loadingRate} = useRates(currentCountry?.code  || "MXN");
+    const {rates, loadingRate} = useRates(currentCountry?.code  || "MXN", currentFilter ? `${currentFilter.value}` : null);
 
     return <div className="min-h-screen bg-slate-950 text-gray-200">
         <div className="container mx-auto px-4 py-6">
@@ -49,6 +51,13 @@ const Money = () => {
                 </div>
 
                 <div className="lg:col-span-9 lg:p-8 col-span-1">
+                    <Filters
+                        onClickFilter={(filter, item) => {
+                            console.log("onClickFilter", filter, item);
+                            setCurrentFilter(item)
+                        }}
+                        currentFilter={currentFilter}
+                    />
                     {
                         !loadingRate && rates && rates.length > 0 && (
                             <CurrencyGraph data={rates} />
