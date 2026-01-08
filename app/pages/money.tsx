@@ -21,7 +21,13 @@ const initValue : CountryType = {
 const Money = () => {
     const {countries} = useCountries();
     const [currentCountry, setCountry] = useState<CountryType|null>(null);
-    const [currentFilter, setCurrentFilter] = useState<OptionItemType|null>({value: 7, label: "7 Days"});
+    const [currentFrom, setCurrentFrom] = useState<string|number>("-7");
+    const [currentTo, setCurrentTo] = useState<string|number>("0");
+
+    const {rates, loadingRate} = useRates(currentCountry?.code  || "MXN",
+        currentFrom,
+        currentTo
+    );
 
     useEffect(() => {
         if (countries.length > 0 && !currentCountry) {
@@ -29,8 +35,6 @@ const Money = () => {
             if (mxnCountry) setCountry(mxnCountry);
         }
     }, [countries, currentCountry]);
-
-    const {rates, loadingRate} = useRates(currentCountry?.code  || "MXN", currentFilter ? `${currentFilter.value}` : null);
 
     return <div className="min-h-screen bg-slate-950 text-gray-200">
         <div className="container mx-auto px-4 py-6">
@@ -52,11 +56,10 @@ const Money = () => {
 
                 <div className="lg:col-span-9 lg:p-8 col-span-1">
                     <Filters
-                        onClickFilter={(filter, item) => {
-                            console.log("onClickFilter", filter, item);
-                            setCurrentFilter(item)
+                        onClickFilter={(from : string|number, to: string|number) => {
+                            setCurrentFrom(from);
+                            setCurrentTo(to);
                         }}
-                        currentFilter={currentFilter}
                     />
                     {
                         !loadingRate && rates && rates.length > 0 && (

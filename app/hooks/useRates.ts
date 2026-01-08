@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {URL_API} from "~/constants";
 
-const useRates = (code: string, filter: string|null) => {
+const useRates = (code: string, from: string|number, to: string|number) => {
     const [rates, setData] = useState<any[]| null>(null);
     const [loadingRate, setLoadingData] = useState(false);
 
@@ -9,7 +9,8 @@ const useRates = (code: string, filter: string|null) => {
 
         try {
             setLoadingData(true);
-            let queryString = `${filter}`.trim().length > 0 ? `?d=${filter}` : "";
+            let queryString = `${from}`.trim().length > 0 ? `?d=${from}` : "";
+            queryString += `${to}`.trim().length > 0 ? `&h=${to}` : "";
             const response = await fetch(`${URL_API}/currency/${code}/history${queryString}`);
 
             let data = await response.json();
@@ -31,7 +32,7 @@ const useRates = (code: string, filter: string|null) => {
     }
     useEffect(() => {
         getData();
-    }, [code, filter]);
+    }, [code, from, to]);
 
     return {
         rates,
