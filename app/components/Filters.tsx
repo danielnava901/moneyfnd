@@ -95,8 +95,6 @@ const Filters = ({onClickFilter} : {
                     <div className="flex justify-end gap-2 mt-4">
                         <button type="button" className={`${ButtonStyle} bg-gray-200`} onClick={() => {
                             setShowModal(false);
-                            setCurrentFilter(items[2]);
-                            onClickFilter(-7, 0);
                         }}>
                             Cancel
                         </button>
